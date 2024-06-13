@@ -16,35 +16,40 @@ const payload = {
   "arriveAt": true
 };
 
-fetch(wazeUrl, {
-  method: 'POST',
-  headers: {
-    'Content-Type': 'application/json'
-  },
-  body: JSON.stringify(payload)
-})
-.then(response => response.json())
-.then(data => {
-        const responses = data.alternatives.map(alternative => {
-            return {
-                date: new Date().toISOString(),
-                isFastest: alternative.response.isFastest,
-                time: alternative.response.totalSeconds / 60,
-                length: alternative.response.totalLength / 1000,
-                route: alternative.response.routeName.replace(';', ',')
-            };
-        });
-        const parser = new Parser({ header: false });
-        const csv = parser.parse(responses);
-    
-        fs.appendFile('output.csv', csv + '\n', { encoding: 'utf8' }, (err) => {
-            if (err) {
-                console.error('Error:', err);
-            } else {
-                console.log('Response has been written to output.csv');
-            }
-        });
-})
-.catch((error) => {
-  console.error('Error:', error);
-});
+const testRoutes = () => {
+  console.log('Testing routes...');
+  fetch(wazeUrl, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify(payload)
+  })
+  .then(response => response.json())
+  .then(data => {
+          const responses = data.alternatives.map(alternative => {
+              return {
+                  date: new Date().toISOString(),
+                  isFastest: alternative.response.isFastest,
+                  time: alternative.response.totalSeconds / 60,
+                  length: alternative.response.totalLength / 1000,
+                  route: alternative.response.routeName.replace(';', ',')
+              };
+          });
+          const parser = new Parser({ header: false });
+          const csv = parser.parse(responses);
+      
+          fs.appendFile('output.csv', csv + '\n', { encoding: 'utf8' }, (err) => {
+              if (err) {
+                  console.error('Error:', err);
+              } else {
+                  console.log('Response has been written to output.csv');
+              }
+          });
+  })
+  .catch((error) => {
+    console.error('Error:', error);
+  });
+};
+
+module.exports = { testRoutes };
